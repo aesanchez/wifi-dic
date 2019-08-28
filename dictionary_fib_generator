@@ -1,0 +1,19 @@
+#!/bin/bash
+prefixmale=004
+prefixfemale=014
+
+#DNI without the last digit
+init=2500000
+final=4500000
+
+#File name
+DIC="dic.txt"
+
+rm $DIC
+while [ $init -le $final ]
+do
+	echo "$prefixmale$init" >> "$DIC"
+	echo "$prefixfemale$init" >> "$DIC"
+	init=$(( $init + 1 ))
+done
+echo "Done!"

