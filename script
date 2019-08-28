@@ -15,6 +15,15 @@ read wifi_interface
 sudo airmon-ng start $wifi_interface
 sudo airodump-ng ${wifi_interface}mon
 
+#reset wifi interface on ctrl_c
+function reset_interface_ctrlc()
+{
+	echo "Reseting wifi interface"
+	sudo airmon-ng stop ${wifi_interface}mon > /dev/null
+	exit
+}
+trap reset_interface_ctrlc SIGINT
+
 #select target information
 printf "\nEnter bssid of the targeted network\n"
 read targeted_bssid
