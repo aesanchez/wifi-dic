@@ -6,9 +6,9 @@ sudo apt install net-tools -y
 clear
 
 #select wifi interface
-printf "Wifi Interfaces avalible:\n"
+printf "Wifi interfaces availible:\n"
 ifconfig | grep -o '^[^ :]*' | grep -o '^w.*'
-printf "\nEnter wifi interface:\n"
+printf "\nEnter WiFi interface name:\n"
 read wifi_interface
 
 #list all wifi networks
